@@ -20,9 +20,9 @@ public class ProtocolFactory {
         return new Gson().toJson(c);
     }
 
-    public static <T> T parse(byte[] fullProtocalJASOnBytes, int len, Class<T> clazz)
+    public static <T> T parse(byte[] fullProtocolJASOnBytes, int len, Class<T> clazz)
     {
-        return parse(CharsetHelper.getString(fullProtocalJASOnBytes, len), clazz);
+        return parse(CharsetHelper.getString(fullProtocolJASOnBytes, len), clazz);
     }
 
     public static <T> T parse(String dataContentOfProtocal, Class<T> clazz)
@@ -30,9 +30,9 @@ public class ProtocolFactory {
         return new Gson().fromJson(dataContentOfProtocal, clazz);
     }
 
-    public static Protocol parse(byte[] fullProtocalJASOnBytes, int len)
+    public static Protocol parse(byte[] fullProtocolJASOnBytes, int len)
     {
-        return (Protocol)parse(fullProtocalJASOnBytes, len, Protocol.class);
+        return (Protocol)parse(fullProtocolJASOnBytes, len, Protocol.class);
     }
 
     public static Protocol createPKeepAliveResponse(int to_user_id)
@@ -41,9 +41,9 @@ public class ProtocolFactory {
                 create(new PKeepAliveResponse()), 0, to_user_id);
     }
 
-    public static PKeepAliveResponse parsePKeepAliveResponse(String dataContentOfProtocal)
+    public static PKeepAliveResponse parsePKeepAliveResponse(String dataContentOfProtocol)
     {
-        return (PKeepAliveResponse)parse(dataContentOfProtocal, PKeepAliveResponse.class);
+        return (PKeepAliveResponse)parse(dataContentOfProtocol, PKeepAliveResponse.class);
     }
 
     public static Protocol createPKeepAlive(int from_user_id)
@@ -52,9 +52,9 @@ public class ProtocolFactory {
                 create(new PKeepAlive()), from_user_id, 0);
     }
 
-    public static PKeepAlive parsePKeepAlive(String dataContentOfProtocal)
+    public static PKeepAlive parsePKeepAlive(String dataContentOfProtocol)
     {
-        return (PKeepAlive)parse(dataContentOfProtocal, PKeepAlive.class);
+        return (PKeepAlive)parse(dataContentOfProtocol, PKeepAlive.class);
     }
 
     public static Protocol createPErrorResponse(int errorCode, String errorMsg, int user_id)
@@ -63,9 +63,9 @@ public class ProtocolFactory {
                 create(new PErrorResponse(errorCode, errorMsg)), 0, user_id);
     }
 
-    public static PErrorResponse parsePErrorResponse(String dataContentOfProtocal)
+    public static PErrorResponse parsePErrorResponse(String dataContentOfProtocol)
     {
-        return (PErrorResponse)parse(dataContentOfProtocal, PErrorResponse.class);
+        return (PErrorResponse)parse(dataContentOfProtocol, PErrorResponse.class);
     }
 
     public static Protocol createPLoginoutInfo(int user_id, String loginName)
@@ -82,9 +82,9 @@ public class ProtocolFactory {
                 , create(new PLoginInfo(loginName, loginPsw, extra)), -1, 0);
     }
 
-    public static PLoginInfo parsePLoginInfo(String dataContentOfProtocal)
+    public static PLoginInfo parsePLoginInfo(String dataContentOfProtocol)
     {
-        return (PLoginInfo)parse(dataContentOfProtocal, PLoginInfo.class);
+        return (PLoginInfo)parse(dataContentOfProtocol, PLoginInfo.class);
     }
 
     public static Protocol createPLoginInfoResponse(int code, int user_id)
@@ -96,9 +96,9 @@ public class ProtocolFactory {
                 true, Protocol.genFingerPrint());
     }
 
-    public static PLoginInfoResponse parsePLoginInfoResponse(String dataContentOfProtocal)
+    public static PLoginInfoResponse parsePLoginInfoResponse(String dataContentOfProtocol)
     {
-        return (PLoginInfoResponse)parse(dataContentOfProtocal, PLoginInfoResponse.class);
+        return (PLoginInfoResponse)parse(dataContentOfProtocol, PLoginInfoResponse.class);
     }
 
     public static Protocol createCommonData(String dataContent, int from_user_id, int to_user_id, boolean QoS, String fingerPrint)
@@ -115,7 +115,7 @@ public class ProtocolFactory {
 
     public static Protocol createRecivedBack(int from_user_id, int to_user_id, String recievedMessageFingerPrint)
     {
-        return new Protocol(ProtocolType.C.FROM_CLIENT_TYPE_OF_RECIVED
+        return new Protocol(ProtocolType.C.FROM_CLIENT_TYPE_OF_RECEIVED
                 , recievedMessageFingerPrint, from_user_id, to_user_id);// 该包当然不需要QoS支持！
     }
 }

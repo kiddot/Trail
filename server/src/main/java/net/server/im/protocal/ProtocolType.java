@@ -12,7 +12,7 @@ public interface ProtocolType
         int FROM_CLIENT_TYPE_OF_KEEP$ALIVE = 1;
         int FROM_CLIENT_TYPE_OF_COMMON$DATA = 2;
         int FROM_CLIENT_TYPE_OF_LOGOUT = 3;
-        int FROM_CLIENT_TYPE_OF_RECIVED = 4;
+        int FROM_CLIENT_TYPE_OF_RECEIVED = 4;
         int FROM_CLIENT_TYPE_OF_ECHO = 5;
     }
 
