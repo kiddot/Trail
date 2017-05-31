@@ -173,7 +173,7 @@ public class QoS4SendDaemon {
         return this.running;
     }
 
-    boolean exist(String fingerPrint) {
+    public boolean exist(String fingerPrint) {
         return this.sentMessages.get(fingerPrint) != null;
     }
 
