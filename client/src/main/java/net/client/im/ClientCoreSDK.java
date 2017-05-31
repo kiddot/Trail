@@ -9,8 +9,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import net.client.im.core.AutoReLoginDaemon;
 import net.client.im.core.KeepAliveDaemon;
+import net.client.im.core.LocalUDPDataReceiver;
 import net.client.im.core.LocalUDPSocketProvider;
+import net.client.im.event.ChatBaseEvent;
+import net.client.im.event.ChatTransDataEvent;
+import net.client.im.event.MessageQoSEvent;
+import net.client.im.qos.QoS4ReceiveDaemon;
+import net.client.im.qos.QoS4SendDaemon;
 
 /**
  * Created by kiddo on 17-5-30.
@@ -116,9 +123,9 @@ public class ClientCoreSDK {
         // 尝试停掉Keep Alive心跳线程
         KeepAliveDaemon.getInstance(context).stop();
         // 尝试停掉消息接收者
-        LocalUDPDataReciever.getInstance(context).stop();
+        LocalUDPDataReceiver.getInstance(context).stop();
         // 尝试停掉QoS质量保证（接收防重复机制）心跳线程
-        QoS4ReciveDaemon.getInstance(context).stop();
+        QoS4ReceiveDaemon.getInstance(context).stop();
         // 尝试关闭本地Socket
         LocalUDPSocketProvider.getInstance().closeLocalUDPSocket();
 
