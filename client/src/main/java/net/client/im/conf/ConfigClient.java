@@ -1,5 +1,7 @@
 package net.client.im.conf;
 
+import net.client.im.core.KeepAliveDaemon;
+
 /**
  * Created by kiddo on 17-5-30.
  */
@@ -13,6 +15,38 @@ public class ConfigClient {
     public static int serverUDPPort = 0;
 
     public static int localUDPPort = 0;
+
+    public static String getAppKey() {
+        return appKey;
+    }
+
+    public static void setAppKey(String appKey) {
+        ConfigClient.appKey = appKey;
+    }
+
+    public static String getServerIP() {
+        return serverIP;
+    }
+
+    public static void setServerIP(String serverIP) {
+        ConfigClient.serverIP = serverIP;
+    }
+
+    public static int getServerUDPPort() {
+        return serverUDPPort;
+    }
+
+    public static void setServerUDPPort(int serverUDPPort) {
+        ConfigClient.serverUDPPort = serverUDPPort;
+    }
+
+    public static int getLocalUDPPort() {
+        return localUDPPort;
+    }
+
+    public static void setLocalUDPPort(int localUDPPort) {
+        ConfigClient.localUDPPort = localUDPPort;
+    }
 
     public static void setSenseMode(SenseMode mode)
     {

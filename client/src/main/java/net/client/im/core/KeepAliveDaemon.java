@@ -18,9 +18,9 @@ import java.util.Observer;
 public class KeepAliveDaemon {
     private static final String TAG = KeepAliveDaemon.class.getSimpleName();
 
-    private static int NETWORK_CONNECTION_TIME_OUT = 10000;
+    public static int NETWORK_CONNECTION_TIME_OUT = 10000;
 
-    private static int KEEP_ALIVE_INTERVAL = 3000;
+    public static int KEEP_ALIVE_INTERVAL = 3000;
 
     private Handler handler = null;
     private Runnable runnable = null;
