@@ -19,13 +19,11 @@ public class Protocol {
     private boolean QoS = false;
     private transient int retryCount = 0;
 
-    public Protocol(int type, String dataContent, int from, int to)
-    {
+    public Protocol(int type, String dataContent, int from, int to) {
         this(type, dataContent, from, to, false, null);
     }
 
-    public Protocol(int type, String dataContent, int from, int to, boolean QoS, String fingerPrint)
-    {
+    public Protocol(int type, String dataContent, int from, int to, boolean QoS, String fingerPrint) {
         this.type = type;
         this.dataContent = dataContent;
         this.from = from;
@@ -40,86 +38,70 @@ public class Protocol {
             this.fp = fingerPrint;
     }
 
-    public int getType()
-    {
+    public int getType() {
         return this.type;
     }
 
-    public void setType(int type)
-    {
+    public void setType(int type) {
         this.type = type;
     }
 
-    public String getDataContent()
-    {
+    public String getDataContent() {
         return this.dataContent;
     }
 
-    public void setDataContent(String dataContent)
-    {
+    public void setDataContent(String dataContent) {
         this.dataContent = dataContent;
     }
 
-    public int getFrom()
-    {
+    public int getFrom() {
         return this.from;
     }
 
-    public void setFrom(int from)
-    {
+    public void setFrom(int from) {
         this.from = from;
     }
 
-    public int getTo()
-    {
+    public int getTo() {
         return this.to;
     }
 
-    public void setTo(int to)
-    {
+    public void setTo(int to) {
         this.to = to;
     }
 
-    public String getFp()
-    {
+    public String getFp() {
         return this.fp;
     }
 
-    public int getRetryCount()
-    {
+    public int getRetryCount() {
         return this.retryCount;
     }
 
-    public void increaseRetryCount()
-    {
+    public void increaseRetryCount() {
         this.retryCount += 1;
     }
 
-    public boolean isQoS()
-    {
+    public boolean isQoS() {
         return this.QoS;
     }
 
-    public String toGsonString()
-    {
+    public String toGsonString() {
         return new Gson().toJson(this);// TODO 建议使用Protobuf
     }
 
-    public byte[] toBytes()
-    {
+    public byte[] toBytes() {
         return CharsetHelper.getBytes(toGsonString());
     }
 
-    public Object clone()
-    {
+    public Object clone() {
         // 克隆一个Protocal对象（该对象已重置retryCount数值为0）
         Protocol cloneP = new Protocol(getType(),
                 getDataContent(), getFrom(), getTo(), isQoS(), getFp());
         return cloneP;
     }
 
-    public static String genFingerPrint()
-    {
+    public static String genFingerPrint() {
         return UUID.randomUUID().toString();
     }
 }
