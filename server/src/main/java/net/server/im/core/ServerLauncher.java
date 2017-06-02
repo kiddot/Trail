@@ -2,7 +2,7 @@ package net.server.im.core;
 
 import net.server.im.event.MessageQoSEventListenerS2C;
 import net.server.im.event.ServerEventListener;
-import net.server.im.protocal.Protocol;
+import net.server.im.protocol.Protocol;
 import net.server.im.qos.QoS4ReceiveDaemonC2S;
 import net.server.im.qos.QoS4SendDaemonS2C;
 
@@ -26,7 +26,7 @@ public abstract class ServerLauncher {
     private static Logger logger = LoggerFactory.getLogger(ServerLauncher.class);
 
     public static String appKey = null;
-    public static int PORT = 7901;
+    public static int PORT = 9090;
     public static int SESSION_RECYCLER_EXPIRE = 10;
 
     private boolean running = false;

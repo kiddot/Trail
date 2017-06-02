@@ -2,10 +2,10 @@ package net.server.im.core;
 
 import net.server.im.event.MessageQoSEventListenerS2C;
 import net.server.im.event.ServerEventListener;
-import net.server.im.protocal.Protocol;
-import net.server.im.protocal.ProtocolFactory;
-import net.server.im.protocal.ProtocolType;
-import net.server.im.protocal.client.PLoginInfo;
+import net.server.im.protocol.Protocol;
+import net.server.im.protocol.ProtocolFactory;
+import net.server.im.protocol.ProtocolType;
+import net.server.im.protocol.client.PLoginInfo;
 import net.server.im.qos.QoS4ReceiveDaemonC2S;
 import net.server.im.qos.QoS4SendDaemonS2C;
 import net.server.im.util.CharsetHelper;
@@ -107,6 +107,7 @@ public class ServerCoreHandler extends IoHandlerAdapter{
                         // TODO DEBUG
                         UserProcessor.getInstance().printOnline();
 
+                        //此处进行了转发机制
                         boolean sendOK = sendData(pFromClient);
                         if (sendOK) {
                             this.serverEventListener.onTransBuffer_C2C_CallBack(
@@ -243,7 +244,7 @@ public class ServerCoreHandler extends IoHandlerAdapter{
 
     protected boolean replyDelegateReceivedBack(IoSession session, Protocol pFromClient) throws Exception {
         if ((pFromClient.isQoS()) && (pFromClient.getFp() != null)) {
-            Protocol receivedBackP = ProtocolFactory.createRecivedBack(
+            Protocol receivedBackP = ProtocolFactory.createReceivedBack(
                     pFromClient.getTo(),
                     pFromClient.getFrom(),
                     pFromClient.getFp());

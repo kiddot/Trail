@@ -1,6 +1,6 @@
 package net.server.im.core;
 
-import net.server.im.protocal.client.PLoginInfo;
+import net.server.im.protocol.client.PLoginInfo;
 
 import java.util.HashMap;
 import java.util.Iterator;

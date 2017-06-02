@@ -1,6 +1,6 @@
 package net.server.im.event;
 
-import net.server.im.protocal.Protocol;
+import net.server.im.protocol.Protocol;
 
 import java.util.ArrayList;
 

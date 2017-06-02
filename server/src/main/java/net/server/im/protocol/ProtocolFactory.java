@@ -1,13 +1,13 @@
-package net.server.im.protocal;
+package net.server.im.protocol;
 
 
 import com.google.gson.Gson;
 
-import net.server.im.protocal.client.PKeepAlive;
-import net.server.im.protocal.client.PLoginInfo;
-import net.server.im.protocal.server.PErrorResponse;
-import net.server.im.protocal.server.PKeepAliveResponse;
-import net.server.im.protocal.server.PLoginInfoResponse;
+import net.server.im.protocol.client.PKeepAlive;
+import net.server.im.protocol.client.PLoginInfo;
+import net.server.im.protocol.server.PErrorResponse;
+import net.server.im.protocol.server.PKeepAliveResponse;
+import net.server.im.protocol.server.PLoginInfoResponse;
 import net.server.im.util.CharsetHelper;
 
 /**
@@ -113,7 +113,7 @@ public class ProtocolFactory {
                 dataContent, from_user_id, to_user_id);
     }
 
-    public static Protocol createRecivedBack(int from_user_id, int to_user_id, String recievedMessageFingerPrint)
+    public static Protocol createReceivedBack(int from_user_id, int to_user_id, String recievedMessageFingerPrint)
     {
         return new Protocol(ProtocolType.C.FROM_CLIENT_TYPE_OF_RECEIVED
                 , recievedMessageFingerPrint, from_user_id, to_user_id);// 该包当然不需要QoS支持！

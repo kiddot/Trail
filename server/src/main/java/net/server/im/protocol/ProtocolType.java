@@ -1,4 +1,4 @@
-package net.server.im.protocal;
+package net.server.im.protocol;
 
 /**
  * Created by kiddo on 17-5-30.

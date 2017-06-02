@@ -1,4 +1,4 @@
-package net.server.im.protocal;
+package net.server.im.protocol;
 
 import com.google.gson.Gson;
 

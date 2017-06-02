@@ -8,9 +8,9 @@ import net.client.im.ClientCoreSDK;
 import net.client.im.conf.ConfigClient;
 import net.client.im.qos.QoS4SendDaemon;
 import net.client.im.util.UDPUtils;
-import net.server.im.protocal.ErrorCode;
-import net.server.im.protocal.Protocol;
-import net.server.im.protocal.ProtocolFactory;
+import net.server.im.protocol.ErrorCode;
+import net.server.im.protocol.Protocol;
+import net.server.im.protocol.ProtocolFactory;
 import net.server.im.util.CharsetHelper;
 
 import java.net.DatagramSocket;

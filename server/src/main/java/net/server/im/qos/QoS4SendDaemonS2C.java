@@ -2,7 +2,7 @@ package net.server.im.qos;
 
 
 import net.server.im.core.ServerLauncher;
-import net.server.im.protocal.Protocol;
+import net.server.im.protocol.Protocol;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;

@@ -7,7 +7,7 @@ import android.util.Log;
 
 import net.client.im.ClientCoreSDK;
 import net.client.im.core.LocalUDPDataSender;
-import net.server.im.protocal.Protocol;
+import net.server.im.protocol.Protocol;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;

@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import net.client.im.ClientCoreSDK;
-import net.server.im.protocal.Protocol;
+import net.server.im.protocol.Protocol;
 
 import java.util.concurrent.ConcurrentHashMap;
 

@@ -9,11 +9,11 @@ import net.client.im.ClientCoreSDK;
 import net.client.im.conf.ConfigClient;
 import net.client.im.qos.QoS4ReceiveDaemon;
 import net.client.im.qos.QoS4SendDaemon;
-import net.server.im.protocal.Protocol;
-import net.server.im.protocal.ProtocolFactory;
-import net.server.im.protocal.ProtocolType;
-import net.server.im.protocal.server.PErrorResponse;
-import net.server.im.protocal.server.PLoginInfoResponse;
+import net.server.im.protocol.Protocol;
+import net.server.im.protocol.ProtocolFactory;
+import net.server.im.protocol.ProtocolType;
+import net.server.im.protocol.server.PErrorResponse;
+import net.server.im.protocol.server.PLoginInfoResponse;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -228,7 +228,7 @@ public class LocalUDPDataReceiver {
             if (pFromServer.getFp() != null) {
                 new LocalUDPDataSender.SendCommonDataAsync(
                         context
-                        , ProtocolFactory.createRecivedBack(
+                        , ProtocolFactory.createReceivedBack(
                         pFromServer.getTo()
                         , pFromServer.getFrom()
                         , pFromServer.getFp())) {
