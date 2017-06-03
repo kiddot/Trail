@@ -269,7 +269,7 @@ public class LoginActivity extends AppCompatActivity {
         /**
          * 登陆的超时时间定义
          */
-        private final static int RETRY_DELAY = 6000;
+        private final static int RETRY_DELAY = 12000;
 
         private Handler handler = null;
         private Runnable runnable = null;

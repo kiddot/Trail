@@ -90,16 +90,18 @@ public class LocalUDPDataReceiver {
             }
 
 
+            Log.d(TAG, "p2pListeningImpl: 接收到一个udp数据报");
             localUDPSocket.receive(packet);
 
-            //增加一层检验，检验得到的数据报是否是给本机的
             if (!packet.getAddress().getHostAddress().equals(InetAddress.getLocalHost().getHostAddress())){
-                continue;
+                Log.d(TAG, "p2pListeningImpl: packet.getAddress().getHostAddress():"+packet.getAddress().getHostAddress()
+                    +",InetAddress.getLocalHost().getHostAddress():"+InetAddress.getLocalHost().getHostAddress());
             }
 
             Message m = Message.obtain();
             m.obj = packet;
             messageHandler.sendMessage(m);
+            Log.d(TAG, "p2pListeningImpl: 准备派发这个udp数据报");
         }
     }
 
@@ -111,8 +113,10 @@ public class LocalUDPDataReceiver {
         }
 
         public void handleMessage(Message msg) {
+            Log.d(TAG, "handleMessage: 成功接受到数据报的处理消息，开始处理");
             DatagramPacket packet = (DatagramPacket) msg.obj;
             if (packet == null) {
+                Log.d(TAG, "handleMessage: 很遗憾获取的数据报为空");
                 return;
             }
 
@@ -120,6 +124,7 @@ public class LocalUDPDataReceiver {
                 Protocol pFromServer =
                         ProtocolFactory.parse(packet.getData(), packet.getLength());
 
+                Log.d(TAG, "handleMessage: " + pFromServer.toString());
                 if (pFromServer.isQoS()) {
                     //重复数据报检测
                     if (QoS4ReceiveDaemon.getInstance(this.context).hasReceived(pFromServer.getFp())) {
@@ -167,6 +172,7 @@ public class LocalUDPDataReceiver {
                         break;
                     }
                     case ProtocolType.S.FROM_SERVER_TYPE_OF_RESPONSE$LOGIN: {
+                        Log.d(TAG, "handleMessage: 接收到了登录反馈回来的数据报");
                         PLoginInfoResponse loginInfoRes = ProtocolFactory.parsePLoginInfoResponse(pFromServer.getDataContent());
 
                         if (loginInfoRes.getCode() == 0) {
@@ -202,6 +208,7 @@ public class LocalUDPDataReceiver {
                     case ProtocolType.S.FROM_SERVER_TYPE_OF_RESPONSE$FOR$ERROR: {
                         PErrorResponse errorRes = ProtocolFactory.parsePErrorResponse(pFromServer.getDataContent());
 
+                        Log.d(TAG, "handleMessage: FROM_SERVER_TYPE_OF_RESPONSE$FOR$ERROR" + errorRes);
                         if (errorRes.getErrorCode() == 301) {
                             ClientCoreSDK.getInstance().setLoginHasInit(false);
                             Log.e(TAG, "【IMCORE】收到服务端的“尚未登陆”的错误消息，心跳线程将停止，请应用层重新登陆.");

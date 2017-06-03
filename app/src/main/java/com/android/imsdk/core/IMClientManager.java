@@ -18,7 +18,9 @@ public class IMClientManager {
 
     private static IMClientManager instance = null;
 
-    /** MobileIMSDK是否已被初始化. true表示已初化完成，否则未初始化. */
+    /**
+     * MobileIMSDK是否已被初始化. true表示已初化完成，否则未初始化.
+     */
     private boolean init = false;
 
     //
@@ -30,23 +32,19 @@ public class IMClientManager {
 
     private Context context = null;
 
-    public static IMClientManager getInstance(Context context)
-    {
-        if(instance == null)
+    public static IMClientManager getInstance(Context context) {
+        if (instance == null)
             instance = new IMClientManager(context);
         return instance;
     }
 
-    private IMClientManager(Context context)
-    {
+    private IMClientManager(Context context) {
         this.context = context;
         initMobileIMSDK();
     }
 
-    public void initMobileIMSDK()
-    {
-        if(!init)
-        {
+    public void initMobileIMSDK() {
+        if (!init) {
             // 设置AppKey
             ConfigClient.appKey = "5418023dfd98c579b6001741";
 
@@ -76,21 +74,19 @@ public class IMClientManager {
         }
     }
 
-    public void release()
-    {
+    public void release() {
         ClientCoreSDK.getInstance().release();
     }
 
-    public ChatTransDataEventImpl getTransDataListener()
-    {
+    public ChatTransDataEventImpl getTransDataListener() {
         return transDataListener;
     }
-    public ChatBaseEventImpl getBaseEventListener()
-    {
+
+    public ChatBaseEventImpl getBaseEventListener() {
         return baseEventListener;
     }
-    public MessageQoSEventImpl getMessageQoSListener()
-    {
+
+    public MessageQoSEventImpl getMessageQoSListener() {
         return messageQoSListener;
     }
 }
