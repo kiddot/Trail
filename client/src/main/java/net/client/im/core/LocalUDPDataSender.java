@@ -141,4 +141,51 @@ public class LocalUDPDataSender {
         } else
             return ErrorCode.COMMON_INVALID_PROTOCAL;
     }
+
+    public static abstract class SendLoginDataAsync extends AsyncTask<Object, Integer, Integer>
+    {
+        protected Context context = null;
+        protected String loginName = null;
+        protected String loginPsw = null;
+        protected String extra = null;
+
+        public SendLoginDataAsync(Context context, String loginName, String loginPsw)
+        {
+            this(context, loginName, loginPsw, null);
+        }
+
+        public SendLoginDataAsync(Context context, String loginName, String loginPsw, String extra)
+        {
+            this.context = context;
+            this.loginName = loginName;
+            this.loginPsw = loginPsw;
+            this.extra = extra;
+        }
+
+        protected Integer doInBackground(Object[] params)
+        {
+            int code = LocalUDPDataSender.getInstance(this.context)
+                    .sendLogin(this.loginName, this.loginPsw, this.extra);
+            return Integer.valueOf(code);
+        }
+
+        protected void onPostExecute(Integer code)
+        {
+            if (code.intValue() == 0)
+            {
+                LocalUDPDataReceiver.getInstance(this.context).startup();
+            }
+            else
+            {
+                Log.d(LocalUDPDataSender.TAG, "【IMCORE】数据发送失败, 错误码是：" + code + "！");
+            }
+
+            fireAfterSendLogin(code.intValue());
+        }
+
+        protected void fireAfterSendLogin(int code)
+        {
+            // default do nothing
+        }
+    }
 }
