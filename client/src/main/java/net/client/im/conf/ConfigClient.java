@@ -8,13 +8,13 @@ import net.client.im.core.KeepAliveDaemon;
 
 public class ConfigClient {
 
-    public static String appKey = null;
+    public static String appKey = "null";
 
-    public static String serverIP = null;
+    public static String serverIP = "120.25.235.70";
 
-    public static int serverUDPPort = 0;
+    public static int serverUDPPort = 9090;
 
-    public static int localUDPPort = 0;
+    public static int localUDPPort = 6060;
 
     public static String getAppKey() {
         return appKey;

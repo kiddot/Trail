@@ -54,6 +54,31 @@ public class LocalUDPDataSender {
         return code;
     }
 
+    public int sendLoginOut()
+    {
+        int code = ErrorCode.COMMON_CODE_OK;
+        if(ClientCoreSDK.getInstance().isLoginHasInit())
+        {
+            byte[] b = ProtocolFactory.createPLoginoutInfo(
+                    ClientCoreSDK.getInstance().getCurrentUserId()
+                    , ClientCoreSDK.getInstance().getCurrentLoginName()).toBytes();
+            code = send(b, b.length);
+            // 登出信息成功发出时
+            if(code == 0)
+            {
+//				// 发出退出登陆的消息同时也关闭心跳线程
+//				KeepAliveDaemon.getInstance(context).stop();
+//				// 重置登陆标识
+//				ClientCoreSDK.getInstance().setLoginHasInit(false);
+            }
+        }
+
+        // 释放SDK资源
+        ClientCoreSDK.getInstance().release();
+
+        return code;
+    }
+
     private int send(byte[] fullProtocolBytes, int dataLen) {
         if (!ClientCoreSDK.getInstance().isInitialed())
             return ErrorCode.ForC.CLIENT_SDK_NO_INITIALED;
