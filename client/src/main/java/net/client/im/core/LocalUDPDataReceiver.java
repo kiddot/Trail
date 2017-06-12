@@ -223,6 +223,16 @@ public class LocalUDPDataReceiver {
 
                         break;
                     }
+                    case ProtocolType.S.FROM_SERVER_TYPE_OF_RESPONSE$NAT:{
+                        Log.d(TAG, "handleMessage: 收到打洞的数据报");
+                        String remoteAddressB = pFromServer.getDataContent();
+                        //进行地址ip和端口号的分解
+                        String[] address = remoteAddressB.split(":");
+                        String ip = address[0];
+                        String port = address[1];
+                        //准备向B发送打洞包 ps：此包不一定能够成功被B接收到，但是起到了打开洞口的重要作用
+
+                    }
                     default:
                         Log.w(TAG, "【IMCORE】收到的服务端消息类型：" + pFromServer.getType() + "，但目前该类型客户端不支持解析和处理！");
                 }
