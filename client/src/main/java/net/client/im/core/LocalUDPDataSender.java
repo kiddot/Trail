@@ -54,18 +54,15 @@ public class LocalUDPDataSender {
         return code;
     }
 
-    public int sendLoginOut()
-    {
+    public int sendLoginOut() {
         int code = ErrorCode.COMMON_CODE_OK;
-        if(ClientCoreSDK.getInstance().isLoginHasInit())
-        {
+        if (ClientCoreSDK.getInstance().isLoginHasInit()) {
             byte[] b = ProtocolFactory.createPLoginoutInfo(
                     ClientCoreSDK.getInstance().getCurrentUserId()
                     , ClientCoreSDK.getInstance().getCurrentLoginName()).toBytes();
             code = send(b, b.length);
             // 登出信息成功发出时
-            if(code == 0)
-            {
+            if (code == 0) {
 //				// 发出退出登陆的消息同时也关闭心跳线程
 //				KeepAliveDaemon.getInstance(context).stop();
 //				// 重置登陆标识
@@ -77,6 +74,11 @@ public class LocalUDPDataSender {
         ClientCoreSDK.getInstance().release();
 
         return code;
+    }
+
+    public int sendChatP2P(String chatIP, int chatPort) {
+        byte[] b = ProtocolFactory.createPKeepAlive(ClientCoreSDK.getInstance().getCurrentUserId()).toBytes();
+        return sendChatMsg(b, b.length, chatIP, chatPort);
     }
 
     private int send(byte[] fullProtocolBytes, int dataLen) {
@@ -107,6 +109,28 @@ public class LocalUDPDataSender {
             }
         }
         return UDPUtils.send(ds, fullProtocolBytes, dataLen) ? ErrorCode.COMMON_CODE_OK : ErrorCode.COMMON_DATA_SEND_FAILD;
+    }
+
+    private int sendChatMsg(byte[] fullProtocolBytes, int dataLen, String chatIP, int chatPort) {
+        if (!ClientCoreSDK.getInstance().isInitialed())
+            return ErrorCode.ForC.CLIENT_SDK_NO_INITIALED;
+
+        if (!ClientCoreSDK.getInstance().isLocalDeviceNetworkOk()) {
+            Log.e(TAG, "【IMCORE】本地网络不能工作，send数据没有继续!");
+            return ErrorCode.ForC.LOCAL_NETWORK_NOT_WORKING;
+        }
+
+        DatagramSocket datagramSocket = LocalUDPSocketProvider.getInstance().getChatUDPSocket();
+
+        if (datagramSocket != null && !datagramSocket.isClosed()) {
+            try {
+                datagramSocket.connect(InetAddress.getByName(chatIP), chatPort);
+            } catch (Exception e) {
+                Log.w(TAG, "【IMCORE】 sendChatMsg时出错，原因是：" + e.getMessage(), e);
+                return ErrorCode.ForC.BAD_CONNECT_TO_SERVER;
+            }
+        }
+        return UDPUtils.send(datagramSocket, fullProtocolBytes, dataLen) ? ErrorCode.COMMON_CODE_OK : ErrorCode.COMMON_DATA_SEND_FAILD;
     }
 
     public static abstract class SendCommonDataAsync extends AsyncTask<Object, Integer, Integer> {
@@ -167,49 +191,40 @@ public class LocalUDPDataSender {
             return ErrorCode.COMMON_INVALID_PROTOCAL;
     }
 
-    public static abstract class SendLoginDataAsync extends AsyncTask<Object, Integer, Integer>
-    {
+    public static abstract class SendLoginDataAsync extends AsyncTask<Object, Integer, Integer> {
         protected Context context = null;
         protected String loginName = null;
         protected String loginPsw = null;
         protected String extra = null;
 
-        public SendLoginDataAsync(Context context, String loginName, String loginPsw)
-        {
+        public SendLoginDataAsync(Context context, String loginName, String loginPsw) {
             this(context, loginName, loginPsw, null);
         }
 
-        public SendLoginDataAsync(Context context, String loginName, String loginPsw, String extra)
-        {
+        public SendLoginDataAsync(Context context, String loginName, String loginPsw, String extra) {
             this.context = context;
             this.loginName = loginName;
             this.loginPsw = loginPsw;
             this.extra = extra;
         }
 
-        protected Integer doInBackground(Object[] params)
-        {
+        protected Integer doInBackground(Object[] params) {
             int code = LocalUDPDataSender.getInstance(this.context)
                     .sendLogin(this.loginName, this.loginPsw, this.extra);
             return Integer.valueOf(code);
         }
 
-        protected void onPostExecute(Integer code)
-        {
-            if (code.intValue() == 0)
-            {
+        protected void onPostExecute(Integer code) {
+            if (code.intValue() == 0) {
                 LocalUDPDataReceiver.getInstance(this.context).startup();
-            }
-            else
-            {
+            } else {
                 Log.d(LocalUDPDataSender.TAG, "【IMCORE】数据发送失败, 错误码是：" + code + "！");
             }
 
             fireAfterSendLogin(code.intValue());
         }
 
-        protected void fireAfterSendLogin(int code)
-        {
+        protected void fireAfterSendLogin(int code) {
             // default do nothing
         }
     }

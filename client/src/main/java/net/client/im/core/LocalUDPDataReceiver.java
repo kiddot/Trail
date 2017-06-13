@@ -229,9 +229,11 @@ public class LocalUDPDataReceiver {
                         //进行地址ip和端口号的分解
                         String[] address = remoteAddressB.split(":");
                         String ip = address[0];
-                        String port = address[1];
+                        String addressPort = address[1];
+                        int port = Integer.valueOf(addressPort);
                         //准备向B发送打洞包 ps：此包不一定能够成功被B接收到，但是起到了打开洞口的重要作用
-
+                        LocalUDPDataSender.getInstance(context).sendChatP2P();
+                        Log.d(TAG, "handleMessage: 发送打洞数据报给B");
                     }
                     default:
                         Log.w(TAG, "【IMCORE】收到的服务端消息类型：" + pFromServer.getType() + "，但目前该类型客户端不支持解析和处理！");
