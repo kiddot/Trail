@@ -71,8 +71,7 @@ public class ClientCoreSDK {
 
                 ClientCoreSDK.this.localDeviceNetworkOk = false;
                 LocalUDPSocketProvider.getInstance().closeLocalUDPSocket();
-            }
-            else {
+            } else {
                 if (ClientCoreSDK.DEBUG) {
                     Log.e(ClientCoreSDK.TAG, "【IMCORE】【本地网络通知】检测本地网络已连接上了!");
                 }
@@ -99,7 +98,7 @@ public class ClientCoreSDK {
             //   由于Android程序的特殊性，整个APP的生命周中除了Application外，其它包括Activity在内
             //   都可能是短命且不可靠的（随时可能会因虚拟机资源不足而被回收），所以MobileIMSDK作为跟
             //   整个APP的生命周期保持一致的全局资源，它的上下文用Application是最为恰当的。
-            if(context instanceof Application)
+            if (context instanceof Application)
                 this.context = context;
             else {
                 this.context = context.getApplicationContext();
@@ -114,8 +113,7 @@ public class ClientCoreSDK {
         }
     }
 
-    public void release()
-    {
+    public void release() {
         // 尝试停掉掉线重连线程（如果线程正在运行的话）
         AutoReLoginDaemon.getInstance(context).stop();
         // 尝试停掉QoS质量保证（发送）心跳线程
@@ -129,12 +127,9 @@ public class ClientCoreSDK {
         // 尝试关闭本地Socket
         LocalUDPSocketProvider.getInstance().closeLocalUDPSocket();
 
-        try
-        {
+        try {
             this.context.unregisterReceiver(this.networkConnectionStatusBroadcastReceiver);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             Log.w(TAG, e.getMessage(), e);
         }
 
@@ -153,8 +148,7 @@ public class ClientCoreSDK {
         return this;
     }
 
-    public String getCurrentLoginName()
-    {
+    public String getCurrentLoginName() {
         return this.currentLoginName;
     }
 

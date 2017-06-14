@@ -16,6 +16,10 @@ public class ConfigClient {
 
     public static int localUDPPort = 6060;
 
+    public static String clientIP = null;
+
+    public static int clientPort = 0;
+
     public static String getAppKey() {
         return appKey;
     }

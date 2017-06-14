@@ -9,6 +9,8 @@ import net.client.im.ClientCoreSDK;
 import net.client.im.conf.ConfigClient;
 import net.client.im.qos.QoS4ReceiveDaemon;
 import net.client.im.qos.QoS4SendDaemon;
+import net.client.im.util.UDPUtils;
+import net.server.im.protocol.ErrorCode;
 import net.server.im.protocol.Protocol;
 import net.server.im.protocol.ProtocolFactory;
 import net.server.im.protocol.ProtocolType;
@@ -18,6 +20,9 @@ import net.server.im.protocol.server.PLoginInfoResponse;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.net.SocketException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -233,13 +238,32 @@ public class LocalUDPDataReceiver {
                         String ip = address[0];
                         String addressPort = address[1];
                         int port = Integer.valueOf(addressPort);
+                        ConfigClient.clientIP = ip;
+                        ConfigClient.clientPort = port;
                         //准备向B发送打洞包 ps：此包不一定能够成功被B接收到，但是起到了打开洞口的重要作用
                         Log.d(TAG, "handleMessage: p2p" + ip + addressPort);
                         LocalUDPDataSender.getInstance(context).sendChatP2P(ip, port);
                         Log.d(TAG, "handleMessage: 发送打洞数据报给B");
                     }
                     case ProtocolType.C.FROM_CLIENT_TYPE_OF_NAT:{
-                        Log.d(TAG, "handleMessage: 收到了由客户端发过来的数据报");
+                        Log.d(TAG, "handleMessage: 收到了由客户端发过来的数据报" + ConfigClient.clientIP + ConfigClient.clientPort);
+                        //此时应该标志能和B直接通信
+//                        String test = "你好";
+//                        byte[] fullProtocolBytes = test.getBytes();
+//                        final DatagramSocket datagramSocket = LocalUDPSocketProvider.getInstance().getLocalUDPSocket();
+//                        final SocketAddress target = new InetSocketAddress(InetAddress.getByName(ConfigClient.clientIP), ConfigClient.clientPort);
+//                        Thread runnable = new Thread() {
+//                            @Override
+//                            public void run() {
+//                                try {
+//                                    datagramSocket.connect(target);
+//                                } catch (SocketException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                        };
+//                        runnable.start();
+//                        UDPUtils.send(datagramSocket, fullProtocolBytes, fullProtocolBytes.length);
                     }
                     default:
                         Log.w(TAG, "【IMCORE】收到的服务端消息类型：" + pFromServer.getType() + "，但目前该类型客户端不支持解析和处理！");

@@ -15,6 +15,9 @@ import net.server.im.util.CharsetHelper;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.net.SocketException;
 
 /**
  * Created by kiddo on 17-5-30.
@@ -92,23 +95,42 @@ public class LocalUDPDataSender {
 
         DatagramSocket ds = LocalUDPSocketProvider.getInstance().getLocalUDPSocket();
         // 如果Socket没有连接上服务端
-        if (ds != null && !ds.isConnected()) {
-            try {
-                if (ConfigClient.serverIP == null) {
-                    Log.w(TAG, "【IMCORE】send数据没有继续，原因是ConfigEntity.server_ip==null!");
-                    return ErrorCode.ForC.TO_SERVER_NET_INFO_NOT_SETUP;
-                }
-
-                // 即刻连接上服务端（如果不connect，即使在DataProgram中设置了远程id和地址则服务端MINA也收不到，跟普通的服
-                // 务端UDP貌似不太一样，普通UDP时客户端无需先connect可以直接send设置好远程ip和端口的DataPragramPackage）
-                //TODO : 此处进行了连接，只能与该地址端口通信
-                ds.connect(InetAddress.getByName(ConfigClient.serverIP), ConfigClient.serverUDPPort);
-            } catch (Exception e) {
-                Log.w(TAG, "【IMCORE】send时出错，原因是：" + e.getMessage(), e);
-                return ErrorCode.ForC.BAD_CONNECT_TO_SERVER;
-            }
+        SocketAddress target = new InetSocketAddress(ConfigClient.serverIP, ConfigClient.serverUDPPort);
+        try {
+            ds.connect(target);
+        } catch (SocketException e) {
+            e.printStackTrace();
         }
+//        if (ds != null && !ds.isConnected()) {
+//            try {
+//                if (ConfigClient.serverIP == null) {
+//                    Log.w(TAG, "【IMCORE】send数据没有继续，原因是ConfigEntity.server_ip==null!");
+//                    return ErrorCode.ForC.TO_SERVER_NET_INFO_NOT_SETUP;
+//                }
+//
+//                // 即刻连接上服务端（如果不connect，即使在DataProgram中设置了远程id和地址则服务端MINA也收不到，跟普通的服
+//                // 务端UDP貌似不太一样，普通UDP时客户端无需先connect可以直接send设置好远程ip和端口的DataPragramPackage）
+//                //TODO : 此处进行了连接，只能与该地址端口通信
+//                ds.connect(InetAddress.getByName(ConfigClient.serverIP), ConfigClient.serverUDPPort);
+//            } catch (Exception e) {
+//                Log.w(TAG, "【IMCORE】send时出错，原因是：" + e.getMessage(), e);
+//                return ErrorCode.ForC.BAD_CONNECT_TO_SERVER;
+//            }
+//        }
         return UDPUtils.send(ds, fullProtocolBytes, dataLen) ? ErrorCode.COMMON_CODE_OK : ErrorCode.COMMON_DATA_SEND_FAILD;
+    }
+
+    private int sendAfterSuccess(byte[] fullProtocolBytes, int dataLen){
+        if (!ClientCoreSDK.getInstance().isInitialed())
+            return ErrorCode.ForC.CLIENT_SDK_NO_INITIALED;
+
+        if (!ClientCoreSDK.getInstance().isLocalDeviceNetworkOk()) {
+            Log.e(TAG, "【IMCORE】本地网络不能工作，send数据没有继续!");
+            return ErrorCode.ForC.LOCAL_NETWORK_NOT_WORKING;
+        }
+
+        final DatagramSocket datagramSocket = LocalUDPSocketProvider.getInstance().getLocalUDPSocket();
+        return UDPUtils.send(datagramSocket, fullProtocolBytes, dataLen) ? ErrorCode.COMMON_CODE_OK : ErrorCode.COMMON_DATA_SEND_FAILD;
     }
 
     private int sendChatMsg(byte[] fullProtocolBytes, int dataLen, String chatIP, int chatPort) {
@@ -120,15 +142,32 @@ public class LocalUDPDataSender {
             return ErrorCode.ForC.LOCAL_NETWORK_NOT_WORKING;
         }
 
-        DatagramSocket datagramSocket = LocalUDPSocketProvider.getInstance().getChatUDPSocket(chatIP);
-        if (datagramSocket != null && !datagramSocket.isClosed()) {
-            try {
-                //datagramSocket.connect(InetAddress.getByName(chatIP), chatPort);
-            } catch (Exception e) {
-                Log.w(TAG, "【IMCORE】 sendChatMsg时出错，原因是：" + e.getMessage(), e);
-                return ErrorCode.ForC.BAD_CONNECT_TO_SERVER;
+        final DatagramSocket datagramSocket = LocalUDPSocketProvider.getInstance().getLocalUDPSocket();
+        final SocketAddress target = new InetSocketAddress(chatIP, chatPort);
+        Thread runnable = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    datagramSocket.connect(target);
+                } catch (SocketException e) {
+                    e.printStackTrace();
+                }
             }
+        };
+        runnable.start();
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+//        if (datagramSocket != null && !datagramSocket.isClosed()) {
+//            try {
+//                //datagramSocket.connect(InetAddress.getByName(chatIP), chatPort);
+//            } catch (Exception e) {
+//                Log.w(TAG, "【IMCORE】 sendChatMsg时出错，原因是：" + e.getMessage(), e);
+//                return ErrorCode.ForC.BAD_CONNECT_TO_SERVER;
+//            }
+//        }
         return UDPUtils.send(datagramSocket, fullProtocolBytes, dataLen) ? ErrorCode.COMMON_CODE_OK : ErrorCode.COMMON_DATA_SEND_FAILD;
     }
 
