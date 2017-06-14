@@ -77,7 +77,7 @@ public class LocalUDPDataSender {
     }
 
     public int sendChatP2P(String chatIP, int chatPort) {
-        byte[] b = ProtocolFactory.createPKeepAlive(ClientCoreSDK.getInstance().getCurrentUserId()).toBytes();
+        byte[] b = ProtocolFactory.createPNatInfo(ClientCoreSDK.getInstance().getCurrentUserId(), 10002).toBytes();
         return sendChatMsg(b, b.length, chatIP, chatPort);
     }
 
@@ -120,11 +120,10 @@ public class LocalUDPDataSender {
             return ErrorCode.ForC.LOCAL_NETWORK_NOT_WORKING;
         }
 
-        DatagramSocket datagramSocket = LocalUDPSocketProvider.getInstance().getChatUDPSocket();
-
+        DatagramSocket datagramSocket = LocalUDPSocketProvider.getInstance().getChatUDPSocket(chatIP);
         if (datagramSocket != null && !datagramSocket.isClosed()) {
             try {
-                datagramSocket.connect(InetAddress.getByName(chatIP), chatPort);
+                //datagramSocket.connect(InetAddress.getByName(chatIP), chatPort);
             } catch (Exception e) {
                 Log.w(TAG, "【IMCORE】 sendChatMsg时出错，原因是：" + e.getMessage(), e);
                 return ErrorCode.ForC.BAD_CONNECT_TO_SERVER;

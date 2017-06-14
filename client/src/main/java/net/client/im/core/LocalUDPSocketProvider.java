@@ -6,6 +6,7 @@ import net.client.im.ClientCoreSDK;
 import net.client.im.conf.ConfigClient;
 
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 /**
  * Created by kiddo on 17-5-31.
@@ -47,14 +48,14 @@ public class LocalUDPSocketProvider {
         }
     }
 
-    private DatagramSocket resetChatUDPSocket() {
+    private DatagramSocket resetChatUDPSocket(String chatIP) {
         try {
             closeChatUDPSocket();
             if (ClientCoreSDK.DEBUG){
                 Log.d(TAG, "resetChatUDPSocket: ");
             }
             this.chatUDPSocket = (ConfigClient.localUDPPort == 0 ?
-                    new DatagramSocket() : new DatagramSocket(ConfigClient.localUDPPort));
+                    new DatagramSocket() : new DatagramSocket(20689, InetAddress.getByName(chatIP)));
             this.chatUDPSocket.setReuseAddress(true);
 
             if (ClientCoreSDK.DEBUG) {
@@ -89,7 +90,7 @@ public class LocalUDPSocketProvider {
         return resetLocalUDPSocket();
     }
 
-    public DatagramSocket getChatUDPSocket() {
+    public DatagramSocket getChatUDPSocket(String chatIP) {
         if (isChatUDPSocketReady()) {
             if (ClientCoreSDK.DEBUG)
                 Log.d(TAG, "【IMCORE】getChatUDPSocket==true，直接返回打洞聊天的socket引用哦。");
@@ -98,7 +99,7 @@ public class LocalUDPSocketProvider {
 
         if (ClientCoreSDK.DEBUG)
             Log.d(TAG, "【IMCORE】getChatUDPSocket==true，需要先resetChatUDPSocket()...");
-        return resetChatUDPSocket();
+        return resetChatUDPSocket(chatIP);
     }
 
     public void closeLocalUDPSocket() {
