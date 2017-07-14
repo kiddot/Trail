@@ -48,18 +48,7 @@ public class IMClientManager {
             // 设置AppKey
             ConfigClient.appKey = "5418023dfd98c579b6001741";
 
-            // 设置服务器ip和服务器端口
-//			ConfigEntity.serverIP = "192.168.82.138";
-//			ConfigEntity.serverIP = "rbcore.openmob.net";
-//			ConfigEntity.serverUDPPort = 7901;
 
-            // MobileIMSDK核心IM框架的敏感度模式设置
-//			ConfigEntity.setSenseMode(SenseMode.MODE_10S);
-
-            // 开启/关闭DEBUG信息输出
-//	    	ClientCoreSDK.DEBUG = false;
-
-            // 【特别注意】请确保首先进行核心库的初始化（这是不同于iOS和Java端的地方)
             ClientCoreSDK.getInstance().init(this.context);
 
             // 设置事件回调

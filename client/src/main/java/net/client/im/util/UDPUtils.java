@@ -26,8 +26,6 @@ public class UDPUtils {
         }
         else {
             Log.e(TAG, "【IMCORE】send方法中》》无效的参数：skt="+skt);//
-            // 解决google统计报告的bug: NullPointerException (@UDPUtils:send:30) {AsyncTask #4}
-//					+", d="+d+", remoteIp="+skt.getInetAddress()+", remotePort="+skt.getPort());
             return false;
         }
     }

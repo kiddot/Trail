@@ -16,29 +16,29 @@ public class AutoReLoginDaemon {
 
     public static int AUTO_RE$LOGIN_INTERVAL = 2000;
 
-    private Handler handler = null;
-    private Runnable runnable = null;
-    private boolean autoReLoginRunning = false;
+    private Handler mHandler = null;
+    private Runnable mRunnable = null;
+    private boolean mAutoReLoginRunning = false;
     private boolean mExecuting = false;
 
-    private static AutoReLoginDaemon instance = null;
+    private static AutoReLoginDaemon mInstance = null;
 
-    private Context context = null;
+    private Context mContext = null;
 
     public static AutoReLoginDaemon getInstance(Context context) {
-        if (instance == null)
-            instance = new AutoReLoginDaemon(context);
-        return instance;
+        if (mInstance == null)
+            mInstance = new AutoReLoginDaemon(context);
+        return mInstance;
     }
 
     private AutoReLoginDaemon(Context context) {
-        this.context = context;
+        this.mContext = context;
         init();
     }
 
     private void init() {
-        this.handler = new Handler();
-        this.runnable = new Runnable() {
+        this.mHandler = new Handler();
+        this.mRunnable = new Runnable() {
             public void run() {
                 if (!AutoReLoginDaemon.this.mExecuting) {
                     new AsyncTask<Object, Integer, Integer>() {
@@ -52,7 +52,7 @@ public class AutoReLoginDaemon {
 
                             if (ClientCoreSDK.autoReLogin) {
                                 code = LocalUDPDataSender.getInstance(
-                                        AutoReLoginDaemon.this.context).sendLogin(
+                                        AutoReLoginDaemon.this.mContext).sendLogin(
                                         ClientCoreSDK.getInstance().getCurrentLoginName()
                                         , ClientCoreSDK.getInstance().getCurrentLoginPsw()
                                         , ClientCoreSDK.getInstance().getCurrentLoginExtra());
@@ -69,13 +69,13 @@ public class AutoReLoginDaemon {
                                 //      当首次登陆后，因服务端或其它网络原因导致本地监听出错，将导致中断本地监听线程，
                                 //	          所以在此处在自动登陆重连或用户自已手机尝试再次登陆时重启监听线程就可以恢复本地
                                 //	          监听线程的运行。
-                                LocalUDPDataReceiver.getInstance(AutoReLoginDaemon.this.context).startup();
+                                LocalUDPDataReceiver.getInstance(AutoReLoginDaemon.this.mContext).startup();
                             }
 
                             //
                             mExecuting = false;
                             // 开始下一个心跳循环
-                            handler.postDelayed(runnable, AUTO_RE$LOGIN_INTERVAL);
+                            mHandler.postDelayed(mRunnable, AUTO_RE$LOGIN_INTERVAL);
                         }
                     }.execute();
                 }
@@ -85,20 +85,20 @@ public class AutoReLoginDaemon {
 
     public void stop()
     {
-        this.handler.removeCallbacks(this.runnable);
-        this.autoReLoginRunning = false;
+        this.mHandler.removeCallbacks(this.mRunnable);
+        this.mAutoReLoginRunning = false;
     }
 
     public void start(boolean immediately)
     {
         stop();
 
-        this.handler.postDelayed(this.runnable, immediately ? 0 : AUTO_RE$LOGIN_INTERVAL);
-        this.autoReLoginRunning = true;
+        this.mHandler.postDelayed(this.mRunnable, immediately ? 0 : AUTO_RE$LOGIN_INTERVAL);
+        this.mAutoReLoginRunning = true;
     }
 
     public boolean isautoReLoginRunning()
     {
-        return this.autoReLoginRunning;
+        return this.mAutoReLoginRunning;
     }
 }

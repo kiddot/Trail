@@ -21,14 +21,14 @@ public class KeepAliveDaemon {
 
     public static int KEEP_ALIVE_INTERVAL = 3000;
 
-    private Handler handler = null;
-    private Runnable runnable = null;
-    private boolean keepAliveRunning = false;
-    private long lastGetKeepAliveResponseFromServerTimeStamp = 0L;
+    private Handler mHandler = null;
+    private Runnable mRunnable = null;
+    private boolean mKeepAliveRunning = false;
+    private long mLastGetKeepAliveResponseFromServerTimeStamp = 0L;
 
-    private Observer networkConnectionLostObserver = null;
-    private boolean isExecuting = false;
-    private Context context = null;
+    private Observer mNetworkConnectionLostObserver = null;
+    private boolean mIsExecuting = false;
+    private Context mContext = null;
 
     private static KeepAliveDaemon instance = null;
 
@@ -39,57 +39,57 @@ public class KeepAliveDaemon {
     }
 
     private KeepAliveDaemon(Context context) {
-        this.context = context;
+        this.mContext = context;
         init();
     }
 
     private void init() {
-        this.handler = new Handler();
-        this.runnable = new Runnable() {
+        this.mHandler = new Handler();
+        this.mRunnable = new Runnable() {
             public void run() {
                 // 极端情况下本次循环内可能执行时间超过了时间间隔，此处是防止在前一
                 // 次还没有运行完的情况下又重复过劲行，从而出现无法预知的错误
-                if (!KeepAliveDaemon.this.isExecuting) {
+                if (!KeepAliveDaemon.this.mIsExecuting) {
                     new AsyncTask<Object, Integer, Integer>() {
                         private boolean willStop = false;
 
                         protected Integer doInBackground(Object[] params) {
-                            KeepAliveDaemon.this.isExecuting = true;
+                            KeepAliveDaemon.this.mIsExecuting = true;
                             if (ClientCoreSDK.DEBUG)
                                 Log.d(KeepAliveDaemon.TAG, "【IMCORE】心跳线程执行中...");
-                            int code = LocalUDPDataSender.getInstance(KeepAliveDaemon.this.context).sendKeepAlive();
+                            int code = LocalUDPDataSender.getInstance(KeepAliveDaemon.this.mContext).sendKeepAlive();
 
                             return Integer.valueOf(code);
                         }
 
                         protected void onPostExecute(Integer code) {
                             boolean isInitialedForKeepAlive =
-                                    KeepAliveDaemon.this.lastGetKeepAliveResponseFromServerTimeStamp == 0L;
+                                    KeepAliveDaemon.this.mLastGetKeepAliveResponseFromServerTimeStamp == 0L;
                             if ((code.intValue() == 0)
-                                    && (KeepAliveDaemon.this.lastGetKeepAliveResponseFromServerTimeStamp == 0L)) {
-                                KeepAliveDaemon.this.lastGetKeepAliveResponseFromServerTimeStamp = System.currentTimeMillis();
+                                    && (KeepAliveDaemon.this.mLastGetKeepAliveResponseFromServerTimeStamp == 0L)) {
+                                KeepAliveDaemon.this.mLastGetKeepAliveResponseFromServerTimeStamp = System.currentTimeMillis();
                             }
 
                             if (!isInitialedForKeepAlive) {
                                 long now = System.currentTimeMillis();
 
                                 // 当当前时间与最近一次服务端的心跳响应包时间间隔>= 10秒就判定当前与服务端的网络连接已断开
-                                if (now - KeepAliveDaemon.this.lastGetKeepAliveResponseFromServerTimeStamp
+                                if (now - KeepAliveDaemon.this.mLastGetKeepAliveResponseFromServerTimeStamp
                                         >= KeepAliveDaemon.NETWORK_CONNECTION_TIME_OUT) {
                                     KeepAliveDaemon.this.stop();
 
-                                    if (KeepAliveDaemon.this.networkConnectionLostObserver != null) {
-                                        KeepAliveDaemon.this.networkConnectionLostObserver.update(null, null);
+                                    if (KeepAliveDaemon.this.mNetworkConnectionLostObserver != null) {
+                                        KeepAliveDaemon.this.mNetworkConnectionLostObserver.update(null, null);
                                     }
                                     this.willStop = true;
                                 }
                             }
 
-                            KeepAliveDaemon.this.isExecuting = false;
+                            KeepAliveDaemon.this.mIsExecuting = false;
                             if (!this.willStop) {
                                 // 开始下一个心跳循环
-                                KeepAliveDaemon.this.handler.postDelayed(
-                                        KeepAliveDaemon.this.runnable
+                                KeepAliveDaemon.this.mHandler.postDelayed(
+                                        KeepAliveDaemon.this.mRunnable
                                         , KeepAliveDaemon.KEEP_ALIVE_INTERVAL);
                             }
                         }
@@ -101,27 +101,27 @@ public class KeepAliveDaemon {
     }
 
     public void stop() {
-        this.handler.removeCallbacks(this.runnable);
-        this.keepAliveRunning = false;
-        this.lastGetKeepAliveResponseFromServerTimeStamp = 0L;
+        this.mHandler.removeCallbacks(this.mRunnable);
+        this.mKeepAliveRunning = false;
+        this.mLastGetKeepAliveResponseFromServerTimeStamp = 0L;
     }
 
     public void start(boolean immediately) {
         stop();
 
-        this.handler.postDelayed(this.runnable, immediately ? 0 : KEEP_ALIVE_INTERVAL);
-        this.keepAliveRunning = true;
+        this.mHandler.postDelayed(this.mRunnable, immediately ? 0 : KEEP_ALIVE_INTERVAL);
+        this.mKeepAliveRunning = true;
     }
 
     public boolean isKeepAliveRunning() {
-        return this.keepAliveRunning;
+        return this.mKeepAliveRunning;
     }
 
     public void updateGetKeepAliveResponseFromServerTimeStamp() {
-        this.lastGetKeepAliveResponseFromServerTimeStamp = System.currentTimeMillis();
+        this.mLastGetKeepAliveResponseFromServerTimeStamp = System.currentTimeMillis();
     }
 
     public void setNetworkConnectionLostObserver(Observer networkConnectionLostObserver) {
-        this.networkConnectionLostObserver = networkConnectionLostObserver;
+        this.mNetworkConnectionLostObserver = networkConnectionLostObserver;
     }
 }

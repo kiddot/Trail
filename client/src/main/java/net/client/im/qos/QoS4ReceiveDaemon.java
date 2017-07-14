@@ -20,12 +20,12 @@ public class QoS4ReceiveDaemon {
     private static final String TAG = QoS4ReceiveDaemon.class.getSimpleName();
     public static final int CHECK_INTERVAL = 300000;
     public static final int MESSAGES_VALID_TIME = 600000;
-    private ConcurrentHashMap<String, Long> receivedMessages = new ConcurrentHashMap();
+    private ConcurrentHashMap<String, Long> mReceivedMessages = new ConcurrentHashMap();
 
-    private Handler handler = null;
-    private Runnable runnable = null;
+    private Handler mHandler = null;
+    private Runnable mRunnable = null;
 
-    private boolean running = false;
+    private boolean mRunning = false;
 
     private boolean mIsExecuting = false;
 
@@ -47,8 +47,8 @@ public class QoS4ReceiveDaemon {
     }
 
     private void init() {
-        this.handler = new Handler();
-        this.runnable = new Runnable() {
+        this.mHandler = new Handler();
+        this.mRunnable = new Runnable() {
             public void run() {
                 // 极端情况下本次循环内可能执行时间超过了时间间隔，此处是防止在前一
                 // 次还没有运行完的情况下又重复过劲行，从而出现无法预知的错误
@@ -56,29 +56,29 @@ public class QoS4ReceiveDaemon {
                     QoS4ReceiveDaemon.this.mIsExecuting = true;
 
                     if (ClientCoreSDK.DEBUG) {
-                        Log.d(QoS4ReceiveDaemon.TAG, "【IMCORE】【QoS接收方】++++++++++ START 暂存处理线程正在运行中，当前长度" + QoS4ReceiveDaemon.this.receivedMessages.size() + ".");
+                        Log.d(QoS4ReceiveDaemon.TAG, "【IMCORE】【QoS接收方】++++++++++ START 暂存处理线程正在运行中，当前长度" + QoS4ReceiveDaemon.this.mReceivedMessages.size() + ".");
                     }
 
-                    for (String key : QoS4ReceiveDaemon.this.receivedMessages.keySet()) {
-                        long delta = System.currentTimeMillis() - ((Long) QoS4ReceiveDaemon.this.receivedMessages.get(key)).longValue();
+                    for (String key : QoS4ReceiveDaemon.this.mReceivedMessages.keySet()) {
+                        long delta = System.currentTimeMillis() - ((Long) QoS4ReceiveDaemon.this.mReceivedMessages.get(key)).longValue();
 
                         if (delta < MESSAGES_VALID_TIME)
                             continue;
                         if (ClientCoreSDK.DEBUG)
                             Log.d(QoS4ReceiveDaemon.TAG, "【IMCORE】【QoS接收方】指纹为" + key + "的包已生存" + delta +
                                     "ms(最大允许" + MESSAGES_VALID_TIME + "ms), 马上将删除之.");
-                        QoS4ReceiveDaemon.this.receivedMessages.remove(key);
+                        QoS4ReceiveDaemon.this.mReceivedMessages.remove(key);
                     }
 
                 }
 
                 if (ClientCoreSDK.DEBUG) {
-                    Log.d(QoS4ReceiveDaemon.TAG, "【IMCORE】【QoS接收方】++++++++++ END 暂存处理线程正在运行中，当前长度" + QoS4ReceiveDaemon.this.receivedMessages.size() + ".");
+                    Log.d(QoS4ReceiveDaemon.TAG, "【IMCORE】【QoS接收方】++++++++++ END 暂存处理线程正在运行中，当前长度" + QoS4ReceiveDaemon.this.mReceivedMessages.size() + ".");
                 }
 
                 QoS4ReceiveDaemon.this.mIsExecuting = false;
 
-                QoS4ReceiveDaemon.this.handler.postDelayed(QoS4ReceiveDaemon.this.runnable, CHECK_INTERVAL);
+                QoS4ReceiveDaemon.this.mHandler.postDelayed(QoS4ReceiveDaemon.this.mRunnable, CHECK_INTERVAL);
             }
         };
     }
@@ -86,26 +86,26 @@ public class QoS4ReceiveDaemon {
     public void startup(boolean immediately) {
         stop();
 
-        if ((this.receivedMessages != null) && (this.receivedMessages.size() > 0)) {
-            for (String key : this.receivedMessages.keySet()) {
+        if ((this.mReceivedMessages != null) && (this.mReceivedMessages.size() > 0)) {
+            for (String key : this.mReceivedMessages.keySet()) {
                 putImpl(key);
             }
 
         }
 
-        this.handler.postDelayed(this.runnable, immediately ? 0 : CHECK_INTERVAL);
+        this.mHandler.postDelayed(this.mRunnable, immediately ? 0 : CHECK_INTERVAL);
 
-        this.running = true;
+        this.mRunning = true;
     }
 
     public void stop() {
-        this.handler.removeCallbacks(this.runnable);
+        this.mHandler.removeCallbacks(this.mRunnable);
 
-        this.running = false;
+        this.mRunning = false;
     }
 
     public boolean isRunning() {
-        return this.running;
+        return this.mRunning;
     }
 
     public void addReceived(Protocol p) {
@@ -119,7 +119,7 @@ public class QoS4ReceiveDaemon {
             return;
         }
 
-        if (this.receivedMessages.containsKey(fingerPrintOfProtocal)) {
+        if (this.mReceivedMessages.containsKey(fingerPrintOfProtocal)) {
             Log.w(TAG, "【IMCORE】【QoS接收方】指纹为" + fingerPrintOfProtocal +
                     "的消息已经存在于接收列表中，该消息重复了（原理可能是对方因未收到应答包而错误重传导致），更新收到时间戳哦.");
         }
@@ -129,14 +129,14 @@ public class QoS4ReceiveDaemon {
 
     private void putImpl(String fingerPrintOfProtocol) {
         if (fingerPrintOfProtocol != null)
-            this.receivedMessages.put(fingerPrintOfProtocol, Long.valueOf(System.currentTimeMillis()));
+            this.mReceivedMessages.put(fingerPrintOfProtocol, Long.valueOf(System.currentTimeMillis()));
     }
 
     public boolean hasReceived(String fingerPrintOfProtocol) {
-        return this.receivedMessages.containsKey(fingerPrintOfProtocol);
+        return this.mReceivedMessages.containsKey(fingerPrintOfProtocol);
     }
 
     public int getSize() {
-        return this.receivedMessages.size();
+        return this.mReceivedMessages.size();
     }
 }

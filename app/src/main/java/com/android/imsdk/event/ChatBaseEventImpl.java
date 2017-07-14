@@ -31,9 +31,8 @@ public class ChatBaseEventImpl implements ChatBaseEvent {
     @Override
     public void onLoginMessage(int dwUserId, int dwErrorCode) {
         if (dwErrorCode == 0) {
-//			Log.i(TAG, "【DEBUG_UI】登录成功，当前分配的user_id=！"+dwUserId);
 
-            // TODO 以下代码仅用于DEMO哦
+            // TODO 以下代码仅用于DEMO
             if (this.mainGUI != null) {
                 this.mainGUI.refreshMyid();
                 this.mainGUI.showIMInfo_green("登录成功,id=" + dwUserId);
@@ -41,7 +40,7 @@ public class ChatBaseEventImpl implements ChatBaseEvent {
         } else {
             Log.e(TAG, "【DEBUG_UI】登录失败，错误代码：" + dwErrorCode);
 
-            // TODO 以下代码仅用于DEMO哦
+            // TODO 以下代码仅用于DEMO
             if (this.mainGUI != null) {
                 this.mainGUI.refreshMyid();
                 this.mainGUI.showIMInfo_red("登录失败,code=" + dwErrorCode);

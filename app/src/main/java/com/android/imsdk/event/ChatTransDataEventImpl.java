@@ -29,7 +29,6 @@ public class ChatTransDataEventImpl implements ChatTransDataEvent
 	{
 		Log.d(TAG, "【DEBUG_UI】收到来自用户"+dwUserid+"的消息:"+dataContent);
 		
-		//！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
 		if(mainGUI != null)
 		{
 			Toast.makeText(mainGUI, dwUserid+"说："+dataContent, Toast.LENGTH_SHORT).show();

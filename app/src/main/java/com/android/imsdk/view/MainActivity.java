@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText editContent = null;
     private TextView viewMyid = null;
     private Button btnSend = null;
+    private Button btnOnline = null;
 
     private ListView chatInfoListView;
     private MyAdapter chatInfoListAdapter;
@@ -61,10 +62,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
-        // ** 注意：Android程序要么就别处理，要处理就一定
-        //			要退干净，否则会有意想不到的问题哦！
-        // 退出登陆
         doLogout();
         // 退出程序
         doExit();
@@ -79,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initViews() {
         btnLogout = (Button) this.findViewById(R.id.logout_btn);
-
+        btnOnline = (Button) this.findViewById(R.id.online);
         btnSend = (Button) this.findViewById(R.id.send_btn);
         editId = (EditText) this.findViewById(R.id.id_editText);
         editContent = (EditText) this.findViewById(R.id.content_editText);
@@ -109,6 +106,17 @@ public class MainActivity extends AppCompatActivity {
                 doSendMessage();
             }
         });
+
+        btnOnline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getOnline();
+            }
+        });
+    }
+
+    private void getOnline(){
+        //LocalUDPDataSender.getInstance(this).sendOnline();
     }
 
     private void doSendMessage() {

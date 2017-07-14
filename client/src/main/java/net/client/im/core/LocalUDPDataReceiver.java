@@ -9,8 +9,6 @@ import net.client.im.ClientCoreSDK;
 import net.client.im.conf.ConfigClient;
 import net.client.im.qos.QoS4ReceiveDaemon;
 import net.client.im.qos.QoS4SendDaemon;
-import net.client.im.util.UDPUtils;
-import net.server.im.protocol.ErrorCode;
 import net.server.im.protocol.Protocol;
 import net.server.im.protocol.ProtocolFactory;
 import net.server.im.protocol.ProtocolType;
@@ -20,9 +18,6 @@ import net.server.im.protocol.server.PLoginInfoResponse;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.net.SocketException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -33,37 +28,37 @@ import java.util.Observer;
 public class LocalUDPDataReceiver {
     private static final String TAG = LocalUDPDataReceiver.class.getSimpleName();
 
-    private Thread thread = null;
+    private Thread mThread = null;
 
-    private static LocalUDPDataReceiver instance = null;
+    private static LocalUDPDataReceiver mInstance = null;
 
-    private static MessageHandler messageHandler = null;
+    private static MessageHandler mMessageHandler = null;
 
-    private Context context = null;
+    private Context mContext = null;
 
     public static LocalUDPDataReceiver getInstance(Context context) {
-        if (instance == null) {
-            instance = new LocalUDPDataReceiver(context);
-            messageHandler = new MessageHandler(context);
+        if (mInstance == null) {
+            mInstance = new LocalUDPDataReceiver(context);
+            mMessageHandler = new MessageHandler(context);
         }
-        return instance;
+        return mInstance;
     }
 
     private LocalUDPDataReceiver(Context context) {
-        this.context = context;
+        this.mContext = context;
     }
 
     public void stop() {
-        if (this.thread != null) {
-            this.thread.interrupt();
-            this.thread = null;
+        if (this.mThread != null) {
+            this.mThread.interrupt();
+            this.mThread = null;
         }
     }
 
     public void startup() {
         stop();
         try {
-            this.thread = new Thread(new Runnable() {
+            this.mThread = new Thread(new Runnable() {
                 public void run() {
                     try {
                         if (ClientCoreSDK.DEBUG) {
@@ -77,7 +72,7 @@ public class LocalUDPDataReceiver {
                     }
                 }
             });
-            this.thread.start();
+            this.mThread.start();
         } catch (Exception e) {
             Log.w(TAG, "【IMCORE】本地UDPSocket监听开启时发生异常," + e.getMessage(), e);
         }
@@ -105,7 +100,7 @@ public class LocalUDPDataReceiver {
 
             Message m = Message.obtain();
             m.obj = packet;
-            messageHandler.sendMessage(m);
+            mMessageHandler.sendMessage(m);
             Log.d(TAG, "p2pListeningImpl: 准备派发这个udp数据报");
         }
     }
@@ -230,22 +225,23 @@ public class LocalUDPDataReceiver {
                     }
                     case ProtocolType.S.FROM_SERVER_TYPE_OF_RESPONSE$NAT:{
                         Log.d(TAG, "handleMessage: 收到打洞的数据报");
-                        String remoteAddressB = pFromServer.getDataContent();
-                        //进行地址ip和端口号的分解
-                        Log.d(TAG, "handleMessage: remoteAddressB" + remoteAddressB);
-                        String[] temp = remoteAddressB.split("/");
-                        String[] address = temp[1].split(":");
-                        String ip = address[0];
-                        String addressPort = address[1];
-                        int port = Integer.valueOf(addressPort);
-                        ConfigClient.clientIP = ip;
-                        ConfigClient.clientPort = port;
-                        //准备向B发送打洞包 ps：此包不一定能够成功被B接收到，但是起到了打开洞口的重要作用
-                        Log.d(TAG, "handleMessage: p2p" + ip + addressPort);
-                        LocalUDPDataSender.getInstance(context).sendChatP2P(ip, port);
-                        Log.d(TAG, "handleMessage: 发送打洞数据报给B");
+//                        String remoteAddressB = pFromServer.getDataContent();
+//                        //进行地址ip和端口号的分解
+//                        Log.d(TAG, "handleMessage: remoteAddressB" + remoteAddressB);
+//                        String[] temp = remoteAddressB.split("/");
+//                        String[] address = temp[1].split(":");
+//                        String ip = address[0];
+//                        String addressPort = address[1];
+//                        int port = Integer.valueOf(addressPort);
+//                        ConfigClient.clientIP = ip;
+//                        ConfigClient.clientPort = port;
+//                        //准备向B发送打洞包 ps：此包不一定能够成功被B接收到，但是起到了打开洞口的重要作用
+//                        Log.d(TAG, "handleMessage: p2p" + ip + addressPort);
+//                        LocalUDPDataSender.getInstance(context).sendChatP2P(ip, port);
+//                        Log.d(TAG, "handleMessage: 发送打洞数据报给B");
                     }
                     case ProtocolType.C.FROM_CLIENT_TYPE_OF_NAT:{
+                        //TODO
                         Log.d(TAG, "handleMessage: 收到了由客户端发过来的数据报" + ConfigClient.clientIP + ConfigClient.clientPort);
                         //此时应该标志能和B直接通信
 //                        String test = "你好";

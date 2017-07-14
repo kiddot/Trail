@@ -11,10 +11,10 @@ import net.client.im.util.UDPUtils;
 import net.server.im.protocol.ErrorCode;
 import net.server.im.protocol.Protocol;
 import net.server.im.protocol.ProtocolFactory;
+import net.server.im.protocol.ProtocolType;
 import net.server.im.util.CharsetHelper;
 
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
@@ -25,18 +25,18 @@ import java.net.SocketException;
 
 public class LocalUDPDataSender {
     private static final String TAG = LocalUDPDataSender.class.getSimpleName();
-    private static LocalUDPDataSender instance = null;
+    private static LocalUDPDataSender mInstance = null;
 
-    private Context context = null;
+    private Context mContext = null;
 
     public static LocalUDPDataSender getInstance(Context context) {
-        if (instance == null)
-            instance = new LocalUDPDataSender(context);
-        return instance;
+        if (mInstance == null)
+            mInstance = new LocalUDPDataSender(context);
+        return mInstance;
     }
 
     private LocalUDPDataSender(Context context) {
-        this.context = context;
+        this.mContext = context;
     }
 
     int sendKeepAlive() {
@@ -79,6 +79,15 @@ public class LocalUDPDataSender {
         return code;
     }
 
+    public int sendOnline(){
+        Log.d(TAG, "请求当前在线用户");
+        int type = ProtocolType.C.FROM_CLIENT_TYPE_OF_ONLINE;
+        Protocol protocol = new Protocol(type, null, ClientCoreSDK.getInstance().getCurrentUserId(), 0);
+        byte[] bytes = protocol.toBytes();
+        return send(bytes, bytes.length);
+    }
+
+    @Deprecated
     public int sendChatP2P(String chatIP, int chatPort) {
         byte[] b = ProtocolFactory.createPNatInfo(ClientCoreSDK.getInstance().getCurrentUserId(), 10002).toBytes();
         return sendChatMsg(b, b.length, chatIP, chatPort);
@@ -120,6 +129,7 @@ public class LocalUDPDataSender {
         return UDPUtils.send(ds, fullProtocolBytes, dataLen) ? ErrorCode.COMMON_CODE_OK : ErrorCode.COMMON_DATA_SEND_FAILD;
     }
 
+    @Deprecated
     private int sendAfterSuccess(byte[] fullProtocolBytes, int dataLen){
         if (!ClientCoreSDK.getInstance().isInitialed())
             return ErrorCode.ForC.CLIENT_SDK_NO_INITIALED;
@@ -133,6 +143,7 @@ public class LocalUDPDataSender {
         return UDPUtils.send(datagramSocket, fullProtocolBytes, dataLen) ? ErrorCode.COMMON_CODE_OK : ErrorCode.COMMON_DATA_SEND_FAILD;
     }
 
+    @Deprecated
     private int sendChatMsg(byte[] fullProtocolBytes, int dataLen, String chatIP, int chatPort) {
         if (!ClientCoreSDK.getInstance().isInitialed())
             return ErrorCode.ForC.CLIENT_SDK_NO_INITIALED;
@@ -218,11 +229,10 @@ public class LocalUDPDataSender {
             byte[] b = p.toBytes();
             int code = send(b, b.length);
             if (code == 0) {
-                // 【【C2C或C2S模式下的QoS机制1/4步：将包加入到发送QoS队列中】】
                 // 如果需要进行QoS质量保证，则把它放入质量保证队列中供处理(已在存在于列
-                // 表中就不用再加了，已经存在则意味当前发送的这个是重传包哦)
-                if (p.isQoS() && !QoS4SendDaemon.getInstance(context).exist(p.getFp()))
-                    QoS4SendDaemon.getInstance(context).put(p);
+                // 表中就不用再加了，已经存在则意味当前发送的这个是重传包)
+                if (p.isQoS() && !QoS4SendDaemon.getInstance(mContext).exist(p.getFp()))
+                    QoS4SendDaemon.getInstance(mContext).put(p);
             }
             return code;
         } else

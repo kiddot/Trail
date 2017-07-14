@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
         // Demo程序的版本号
         viewVersion.setText(getProgrammVersion());
 
-        this.setTitle("MobileIMSDK Demo登陆");
+        this.setTitle("IM登陆");
     }
 
     private void initListeners() {
@@ -140,7 +140,6 @@ public class LoginActivity extends AppCompatActivity {
         if (!(serverIP.trim().length() <= 0)
                 && !(serverPort.trim().length() <= 0)) {
             // 无条件重置socket，防止首次登陆时用了错误的ip或域名，下次登陆时sendData中仍然使用老的ip
-            // 说明：本行代码建议仅用于Demo时，生产环境下是没有意义的，因为你的APP里不可能连IP都搞错了
             LocalUDPSocketProvider.getInstance().closeLocalUDPSocket();
 
             ConfigClient.serverIP = serverIP.trim();
@@ -169,9 +168,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
-        // ** 注意：Android程序要么就别处理，要处理就一定
-        //			要退干净，否则会有意想不到的问题哦！
         finish();
         System.exit(0);
     }
@@ -180,7 +176,6 @@ public class LoginActivity extends AppCompatActivity {
      * 真正的登陆信息发送实现方法。
      */
     private void doLoginImpl() {
-        // * 立即显示登陆处理进度提示（并将同时启动超时检查线程）
         onLoginProgress.showProgressing(true);
         // * 设置好服务端反馈的登陆结果观察者（当客户端收到服务端反馈过来的登陆消息时将被通知）
         IMClientManager.getInstance(this).getBaseEventListener()
@@ -206,7 +201,6 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(getApplicationContext(), "数据发送失败。错误码是：" + code + "！", Toast.LENGTH_SHORT).show();
 
-                    // * 登陆信息没有成功发出时当然无条件取消显示登陆进度条
                     onLoginProgress.showProgressing(false);
                 }
             }
